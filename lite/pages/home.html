@@ -172,10 +172,10 @@
     <!-- 状态栏 -->
     <div class="status-bar">
         <div class="time">9:41</div>
+       
         <div class="status-icons">
-            <span class="status-icon"></span>
-            <span class="status-icon"></span>
-            <span class="status-icon"></span>
+            <i class="fa-solid fa-battery-three-quarters "></i>
+            
         </div>
     </div>
 
@@ -193,8 +193,8 @@
             </div>
             <div class="flex justify-between">
                 <div class="text-white text-center">
-                    <p class="text-blue-100 text-xs">今日工时</p>
-                    <p class="text-xl font-bold">5.2h</p>
+                    <p class="text-blue-100 text-xs">今日日期</p>
+                    <p class="text-xl font-bold" id="current-date">周一</p>
                 </div>
                 <div class="text-white text-center">
                     <p class="text-blue-100 text-xs">本周工时</p>
@@ -439,6 +439,17 @@
         shopTab.addEventListener('click', function() {
             window.location.href = 'shop.html';
         });
+        
+        // 更新日期显示
+        function updateDateDisplay() {
+            const now = new Date();
+            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const currentWeekday = weekdays[now.getDay()];
+            document.getElementById('current-date').textContent = currentWeekday;
+        }
+        
+        // 页面加载时更新日期显示
+        updateDateDisplay();
         
         // 随机更新在线人数
         function updateOnlineCount() {

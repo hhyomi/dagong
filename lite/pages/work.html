@@ -98,9 +98,7 @@
     <div class="status-bar">
         <div class="time">9:41</div>
         <div class="status-icons">
-            <span class="status-icon"></span>
-            <span class="status-icon"></span>
-            <span class="status-icon"></span>
+            <i class="fa-solid fa-battery-three-quarters "></i>
         </div>
     </div>
 
@@ -112,8 +110,8 @@
         <div class="flex flex-col items-center mb-8">
             <div class="timer-circle">
                 <div class="timer-content">
-                    <p class="text-4xl font-bold mb-1">05:23:41</p>
-                    <p class="text-gray-500 text-sm">今日工作时间</p>
+                    <p class="text-4xl font-bold mb-1" id="countdown-timer">08:00:00</p>
+                    <p class="text-gray-500 text-sm">今日剩余工作时间</p>
                 </div>
             </div>
          
@@ -199,5 +197,30 @@
             <span>我的</span>
         </div>
     </div>
+
+    <script>
+    // 倒计时功能
+    function updateCountdown() {
+        const now = new Date();
+        const target = new Date();
+        target.setHours(18, 0, 0, 0); // 设置目标时间为18:00
+        
+        if (now > target) {
+            target.setDate(target.getDate() + 1); // 如果当前时间超过目标时间，设置为明天
+        }
+        
+        const diff = target - now;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('countdown-timer').textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // 每秒更新倒计时
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // 立即执行一次
+    </script>
 </body>
 </html> 
