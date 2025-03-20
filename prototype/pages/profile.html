@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 - 打工人生存指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 17px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            opacity: 0.8;
+            border-radius: 2px;
+        }
+        .nav-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        .tab-bar {
+            height: 83px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e5e5ea;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            font-size: 10px;
+        }
+        .tab-item.active {
+            color: #007AFF;
+        }
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #007AFF, #00C6FF);
+            padding: 40px 20px;
+            color: white;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            overflow: hidden;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            color: #007AFF;
+        }
+        .menu-text {
+            flex: 1;
+            font-size: 17px;
+        }
+        .menu-arrow {
+            color: #8e8e93;
+        }
+        .badge {
+            background: #007AFF;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-icons">
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <h1 class="text-lg font-semibold">我的</h1>
+        <i class="fas fa-cog text-xl"></i>
+    </div>
+
+    <!-- 个人资料头部 -->
+    <div class="profile-header">
+        <div class="flex items-center space-x-4">
+            <div class="avatar">
+                <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mario.png" alt="头像">
+            </div>
+            <div>
+                <h2 class="text-xl font-bold">超级打工仔</h2>
+                <p class="text-sm opacity-80">打工等级：Lv.8</p>
+            </div>
+        </div>
+        <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+            <div>
+                <div class="text-2xl font-bold">128</div>
+                <div class="text-sm opacity-80">打工天数</div>
+            </div>
+            <div>
+                <div class="text-2xl font-bold">256</div>
+                <div class="text-sm opacity-80">成就数</div>
+            </div>
+            <div>
+                <div class="text-2xl font-bold">512</div>
+                <div class="text-sm opacity-80">分享数</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 菜单列表 -->
+    <div class="mt-4">
+        <div class="menu-item">
+            <i class="fas fa-coins menu-icon"></i>
+            <span class="menu-text">我的金币</span>
+            <span class="badge">1280</span>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-trophy menu-icon"></i>
+            <span class="menu-text">我的成就</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-history menu-icon"></i>
+            <span class="menu-text">打工记录</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-share-alt menu-icon"></i>
+            <span class="menu-text">我的分享</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-star menu-icon"></i>
+            <span class="menu-text">收藏夹</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="menu-item">
+            <i class="fas fa-bell menu-icon"></i>
+            <span class="menu-text">消息通知</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-shield-alt menu-icon"></i>
+            <span class="menu-text">隐私设置</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-question-circle menu-icon"></i>
+            <span class="menu-text">帮助与反馈</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-info-circle menu-icon"></i>
+            <span class="menu-text">关于我们</span>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home tab-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-briefcase tab-icon"></i>
+            <span>工作</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-share-alt tab-icon"></i>
+            <span>分享</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-user tab-icon"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

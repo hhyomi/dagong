@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作状态 - 打工人生存指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 17px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            opacity: 0.8;
+            border-radius: 2px;
+        }
+        .nav-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        .tab-bar {
+            height: 83px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e5e5ea;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            font-size: 10px;
+        }
+        .tab-item.active {
+            color: #007AFF;
+        }
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        .progress-ring circle.bg {
+            stroke: #e5e5ea;
+        }
+        .progress-ring circle.progress {
+            stroke: #007AFF;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-icons">
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <h1 class="text-lg font-semibold">工作状态</h1>
+        <i class="fas fa-chart-line text-xl"></i>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="p-4 space-y-4">
+        <!-- 工作时长统计 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-semibold">今日工作时长</h2>
+                <span class="text-sm text-gray-500">目标：8小时</span>
+            </div>
+            <div class="flex items-center justify-center">
+                <div class="relative w-48 h-48">
+                    <svg class="progress-ring w-full h-full" viewBox="0 0 100 100">
+                        <circle class="bg" cx="50" cy="50" r="45"/>
+                        <circle class="progress" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="70"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="text-2xl font-bold">5.5</span>
+                        <span class="text-sm text-gray-500">小时</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <div class="text-sm text-gray-500">本周</div>
+                    <div class="text-lg font-semibold">32.5h</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">本月</div>
+                    <div class="text-lg font-semibold">128h</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">总时长</div>
+                    <div class="text-lg font-semibold">1,256h</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成就系统 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">打工成就</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-blue-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">早起达人</h3>
+                            <p class="text-sm text-gray-500">连续7天早起</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="h-1 bg-blue-100 rounded-full">
+                            <div class="h-full w-5/7 bg-blue-500 rounded-full"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">5/7天</div>
+                    </div>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-star text-purple-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">勤奋之星</h3>
+                            <p class="text-sm text-gray-500">累计工作1000小时</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="h-1 bg-purple-100 rounded-full">
+                            <div class="h-full w-4/5 bg-purple-500 rounded-full"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">800/1000h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工作记录 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">工作记录</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">完成项目报告</h3>
+                            <p class="text-sm text-gray-500">2小时</p>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500">10:30</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">团队会议</h3>
+                            <p class="text-sm text-gray-500">1小时</p>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-500">14:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home tab-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-briefcase tab-icon"></i>
+            <span>工作</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-share-alt tab-icon"></i>
+            <span>分享</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user tab-icon"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

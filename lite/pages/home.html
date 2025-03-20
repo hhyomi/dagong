@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 打工人日记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            opacity: 0.8;
+            border-radius: 2px;
+        }
+        .tab-bar {
+            height: 80px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 11px;
+        }
+        .tab-item.active {
+            color: #007AFF;
+        }
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .spinner {
+            animation: spin 4s linear infinite;
+        }
+        .star {
+            position: absolute;
+            pointer-events: none;
+            animation: star-animation 1s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes star-animation {
+            0% {
+                transform: translate(0, 0) scale(0.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(1);
+                opacity: 0;
+            }
+        }
+        /* 金币增加动画 */
+        .coin-increase {
+            animation: coin-pop 0.5s ease-out;
+        }
+        @keyframes coin-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        /* 金币雨动画 */
+        .coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('https://i.imgur.com/gBp5daH.png') no-repeat center/contain;
+            pointer-events: none;
+            z-index: 100;
+            animation: coin-fall 2s ease-in forwards;
+        }
+        
+        @keyframes coin-fall {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(var(--fall-height)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* 金币增加提示 */
+        .coin-tooltip {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 16px;
+            font-weight: bold;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+        
+        .coin-tooltip.active {
+            opacity: 1;
+        }
+        
+        .work-button {
+            background: linear-gradient(135deg, #FF9500, #FF3B30);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(255, 59, 48, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .work-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(255, 59, 48, 0.3);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 59, 48, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-icons">
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+        </div>
+    </div>
+
+    <!-- 欢迎卡片 -->
+    <div class="p-5">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5 mb-8">
+            <div class="flex items-center mb-4">
+                <div class="w-14 h-14 bg-white rounded-full overflow-hidden border-2 border-white">
+                    <img src="https://i.imgur.com/8Km9tLL.png" alt="马里奥头像" class="w-full h-full object-cover">
+                </div>
+                <div class="ml-4 text-white">
+                    <h2 class="text-xl font-bold">早上好，马里奥</h2>
+                    <p class="text-blue-100 text-sm">今天也要元气满满地打工呀！</p>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <div class="text-white text-center">
+                    <p class="text-blue-100 text-xs">今日工时</p>
+                    <p class="text-xl font-bold">5.2h</p>
+                </div>
+                <div class="text-white text-center">
+                    <p class="text-blue-100 text-xs">本周工时</p>
+                    <p class="text-xl font-bold">32h</p>
+                </div>
+                <div class="text-white text-center">
+                    <p class="text-blue-100 text-xs">在线人数</p>
+                    <p class="text-md font-bold" id="online-count">3,852 人在线</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="px-5 pt-2 pb-20">
+        <!-- 今日状态 -->
+        <div class="mb-8 mt-4">
+            <h1 class="text-2xl font-bold mb-4">今日状态</h1>
+            <div class="bg-blue-50 rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center">
+                        <img src="https://i.imgur.com/8Km9tLL.png" alt="Mario" class="w-12 h-12 mr-3 rounded-full">
+                        <div>
+                            <h2 class="font-semibold text-lg">打工模式</h2>
+                            <p class="text-gray-500 text-sm">一天工作8小时，效率翻倍</p>
+                        </div>
+                    </div>
+                    <div class="w-14 h-7 bg-green-100 rounded-full flex items-center justify-center">
+                        <span class="text-green-700 text-xs font-medium">进行中</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-500 text-sm mb-1">今日已工作</p>
+                        <p class="text-2xl font-bold">5h 23m</p>
+                    </div>
+                    <button class="work-button pulse-animation" id="work-button">
+                        <i class="fas fa-bolt mr-2"></i>
+                        正在打工
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 在线人数展示 -->
+        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm mb-6 relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-users text-purple-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium">一起打工的小伙伴</h3>
+                        <p class="text-sm text-gray-500" id="online-count">3,872 人在线</p>
+                    </div>
+                </div>
+                <div class="flex -space-x-2">
+                    <img src="https://i.imgur.com/eFnOmim.png" class="w-8 h-8 rounded-full border-2 border-white">
+                    <img src="https://i.imgur.com/JoK2SeE.png" class="w-8 h-8 rounded-full border-2 border-white">
+                    <img src="https://i.imgur.com/ZBCBh7O.png" class="w-8 h-8 rounded-full border-2 border-white">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center border-2 border-white text-xs font-medium">+99</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷方式 -->
+        <h2 class="text-lg font-semibold mb-3">快捷方式</h2>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-indigo-50 rounded-xl p-4 flex items-center">
+                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-chart-line text-indigo-500"></i>
+                </div>
+                <span class="font-medium">工作统计</span>
+            </div>
+            <div class="bg-amber-50 rounded-xl p-4 flex items-center relative" id="coin-container">
+                <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mr-3" id="coin-button">
+                    <i class="fas fa-coins text-amber-500 spinner"></i>
+                </div>
+                <span class="font-medium">金币: <span id="coin-count">1000</span></span>
+            </div>
+        </div>
+
+        <!-- 通知 -->
+        <h2 class="text-lg font-semibold mb-3">通知</h2>
+        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+            <div class="flex items-start">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <i class="fas fa-bell text-red-500"></i>
+                </div>
+                <div>
+                    <h3 class="font-medium">休息提醒</h3>
+                    <p class="text-sm text-gray-500 mt-1">你已连续工作2小时，建议休息一下眼睛</p>
+                    <p class="text-xs text-gray-400 mt-2">10分钟前</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 金币提示 -->
+    <div class="coin-tooltip" id="coin-tooltip">
+        <i class="fas fa-coins text-yellow-400 mr-3"></i>
+        <span id="coin-increase-text">+50 金币</span>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item active">
+            <i class="fas fa-home tab-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-briefcase tab-icon"></i>
+            <span>工作</span>
+        </div>
+        <div class="tab-item" id="shop-tab">
+            <i class="fas fa-store tab-icon"></i>
+            <span>商城</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user tab-icon"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 获取元素
+        const coinButton = document.getElementById('coin-button');
+        const coinCount = document.getElementById('coin-count');
+        const coinContainer = document.getElementById('coin-container');
+        const onlineCount = document.getElementById('online-count');
+        const shopTab = document.getElementById('shop-tab');
+        const workButton = document.getElementById('work-button');
+        const coinTooltip = document.getElementById('coin-tooltip');
+        
+        // 当前金币数量 - 初始设置为1000
+        let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 1000;
+        
+        // 更新金币显示
+        function updateCoinDisplay() {
+            coinCount.textContent = coins;
+        }
+        
+        // 页面加载时更新金币显示
+        updateCoinDisplay();
+        
+        // 创建星星效果
+        function createStars(element, count = 5) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random angle and distance
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 30 + Math.random() * 70;
+                
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                star.style.setProperty('--tx', `${tx}px`);
+                star.style.setProperty('--ty', `${ty}px`);
+                
+                star.innerHTML = '<i class="fas fa-star text-yellow-400"></i>';
+                star.style.left = `${centerX}px`;
+                star.style.top = `${centerY}px`;
+                
+                document.body.appendChild(star);
+                
+                setTimeout(() => {
+                    document.body.removeChild(star);
+                }, 1000);
+            }
+        }
+        
+        // 创建金币雨效果
+        function createCoinRain() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = 'coin';
+                    
+                    // 随机位置和掉落高度
+                    const posX = 50 + Math.random() * (window.innerWidth - 100);
+                    const fallHeight = 300 + Math.random() * 400;
+                    
+                    coin.style.left = `${posX}px`;
+                    coin.style.top = '0';
+                    coin.style.setProperty('--fall-height', `${fallHeight}px`);
+                    
+                    document.body.appendChild(coin);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(coin);
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+        
+        // 显示金币增加提示
+        function showCoinIncrease(amount) {
+            coinTooltip.querySelector('#coin-increase-text').textContent = `+${amount} 金币`;
+            coinTooltip.classList.add('active');
+            
+            setTimeout(() => {
+                coinTooltip.classList.remove('active');
+            }, 2000);
+        }
+        
+        // 工作按钮点击事件
+        workButton.addEventListener('click', function() {
+            // 增加金币
+            coins += 50;
+            localStorage.setItem('coins', coins);
+            updateCoinDisplay();
+            
+            // 显示特效
+            createCoinRain();
+            showCoinIncrease(50);
+            
+            // 添加金币增加动画
+            coinCount.classList.add('coin-increase');
+            setTimeout(() => {
+                coinCount.classList.remove('coin-increase');
+            }, 500);
+            
+            // 工作按钮动画
+            this.classList.remove('pulse-animation');
+            setTimeout(() => {
+                this.classList.add('pulse-animation');
+            }, 100);
+        });
+        
+        // 金币按钮点击事件
+        coinButton.addEventListener('click', function() {
+            createStars(this);
+        });
+        
+        // 商店按钮点击事件
+        shopTab.addEventListener('click', function() {
+            window.location.href = 'shop.html';
+        });
+        
+        // 随机更新在线人数
+        function updateOnlineCount() {
+            const base = 3800;
+            const variation = Math.floor(Math.random() * 200);
+            onlineCount.textContent = `${base + variation} 人在线`;
+            
+            setTimeout(updateOnlineCount, 5000 + Math.random() * 5000);
+        }
+        
+        // 初始化
+        updateOnlineCount();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分享 - 打工人生存指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 17px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            opacity: 0.8;
+            border-radius: 2px;
+        }
+        .nav-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        .tab-bar {
+            height: 83px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e5e5ea;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            font-size: 10px;
+        }
+        .tab-item.active {
+            color: #007AFF;
+        }
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .preview-area {
+            aspect-ratio: 9/16;
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-text {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+        .sticker {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            bottom: 20px;
+            right: 20px;
+            animation: bounce 2s ease infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .image-option {
+            aspect-ratio: 9/16;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .image-option.selected {
+            border-color: #007AFF;
+            box-shadow: 0 0 0 2px rgba(0,122,255,0.3);
+        }
+        .image-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-icons">
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <h1 class="text-lg font-semibold">创建分享图</h1>
+        <i class="fas fa-palette text-xl"></i>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="p-4 space-y-4">
+        <!-- 预览区域 -->
+        <div class="preview-area" style="background-image: url('https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-1.jpg')">
+            <div class="preview-text" contenteditable="true">今天又是努力打工的一天！</div>
+            <div class="sticker">
+                <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mario-sticker.png" alt="Mario Sticker">
+            </div>
+        </div>
+
+        <!-- 背景选择 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">选择背景</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="image-option selected">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-1.jpg" alt="背景1">
+                </div>
+                <div class="image-option">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-2.jpg" alt="背景2">
+                </div>
+                <div class="image-option">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-3.jpg" alt="背景3">
+                </div>
+                <div class="image-option">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-4.jpg" alt="背景4">
+                </div>
+            </div>
+        </div>
+
+        <!-- 文字编辑 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">编辑文案</h2>
+            <input type="text" placeholder="输入你的文案" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- 贴纸选择 -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">选择贴纸</h2>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mario-sticker.png" alt="贴纸1" class="w-12 h-12">
+                </div>
+                <div class="aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/coin.png" alt="贴纸2" class="w-12 h-12">
+                </div>
+                <div class="aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mushroom.png" alt="贴纸3" class="w-12 h-12">
+                </div>
+                <div class="aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/star.png" alt="贴纸4" class="w-12 h-12">
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="flex space-x-4">
+            <button class="flex-1 bg-blue-500 text-white py-3 rounded-lg font-semibold">
+                生成图片
+            </button>
+            <button class="flex-1 bg-white text-blue-500 py-3 rounded-lg font-semibold border border-blue-500">
+                分享
+            </button>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home tab-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-briefcase tab-icon"></i>
+            <span>工作</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-share-alt tab-icon"></i>
+            <span>分享</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user tab-icon"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

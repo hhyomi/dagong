@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打工人生存指南</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="status-icons">
+                <span class="signal"></span>
+                <span class="wifi"></span>
+                <span class="battery"></span>
+            </div>
+        </div>
+
+        <!-- 第一个banner - 打工状态 -->
+        <section class="banner working-status">
+            <div class="character">
+                <div class="mario-avatar">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mario.png" alt="Mario">
+                </div>
+                <div class="coins">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/coin.png" alt="Coin">
+                    <span class="coin-count">2,345</span>
+                </div>
+                <div class="buttons">
+                    <button class="status-btn working ios-button">
+                        <span class="count">2,345</span>人和你同在打工
+                    </button>
+                    <button class="status-btn off-work ios-button">
+                        下班啦！
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第二个banner - 分享图片生成器 -->
+        <section class="banner image-generator">
+            <h2 class="section-title">创建打工分享图</h2>
+            
+            <div class="generator-container">
+                <div class="image-gallery">
+                    <h3 class="subsection-title">选择背景</h3>
+                    <div class="image-options">
+                        <div class="image-option selected" data-img="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-1.jpg">
+                            <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-1.jpg" alt="马里奥背景1">
+                        </div>
+                        <div class="image-option" data-img="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-2.jpg">
+                            <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-2.jpg" alt="马里奥背景2">
+                        </div>
+                        <div class="image-option" data-img="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-3.jpg">
+                            <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-3.jpg" alt="马里奥背景3">
+                        </div>
+                        <div class="image-option" data-img="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-4.jpg">
+                            <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/backgrounds/mario-bg-4.jpg" alt="马里奥背景4">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preview-area" id="previewArea">
+                    <div class="preview-image" id="previewImage"></div>
+                    <div class="preview-text" contenteditable="true">今天又是努力打工的一天！</div>
+                    <div class="sticker mario-sticker">
+                        <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mario-sticker.png" alt="Mario Sticker">
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <input type="text" id="customText" placeholder="输入自定义文案" class="ios-input">
+                    <div class="button-group">
+                        <button onclick="generateImage()" class="ios-button primary">生成图片</button>
+                        <button onclick="shareImage()" class="ios-button secondary">
+                            <span class="icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 8L22 12L18 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M2 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 打工人生存指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 17px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            opacity: 0.8;
+            border-radius: 2px;
+        }
+        .nav-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        .tab-bar {
+            height: 83px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e5e5ea;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8e8e93;
+            font-size: 10px;
+        }
+        .tab-item.active {
+            color: #007AFF;
+        }
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .mario-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .coin-spin {
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-icons">
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <h1 class="text-lg font-semibold">打工人生存指南</h1>
+        <i class="fas fa-bell text-xl"></i>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="p-4 space-y-4">
+        <!-- 打工状态卡片 -->
+        <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white">
+            <div class="flex flex-col items-center space-y-4">
+                <div class="mario-avatar">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/mario.png" alt="Mario" class="w-full h-full object-contain">
+                </div>
+                <div class="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full">
+                    <img src="https://raw.githubusercontent.com/mario-sprites/mario-sprites/master/coin.png" alt="Coin" class="w-6 h-6 coin-spin">
+                    <span class="font-semibold">2,345</span>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="bg-white/20 px-6 py-2 rounded-full backdrop-blur-sm">
+                        <span class="font-semibold">2,345</span>人和你同在打工
+                    </button>
+                    <button class="bg-white/20 px-6 py-2 rounded-full backdrop-blur-sm">
+                        下班啦！
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷功能区 -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-camera text-blue-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium">生成分享图</h3>
+                        <p class="text-sm text-gray-500">记录打工生活</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-trophy text-purple-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium">打工成就</h3>
+                        <p class="text-sm text-gray-500">解锁新徽章</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 打工社区 -->
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+            <h2 class="text-lg font-semibold mb-4">打工社区</h2>
+            <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                    <img src="https://i.pravatar.cc/40" alt="Avatar" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-medium">打工仔</span>
+                            <span class="text-sm text-gray-500">2小时前</span>
+                        </div>
+                        <p class="text-gray-700 mt-1">今天又是努力打工的一天！</p>
+                        <div class="flex items-center space-x-4 mt-2 text-gray-500">
+                            <span class="flex items-center space-x-1">
+                                <i class="far fa-heart"></i>
+                                <span class="text-sm">128</span>
+                            </span>
+                            <span class="flex items-center space-x-1">
+                                <i class="far fa-comment"></i>
+                                <span class="text-sm">32</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item active">
+            <i class="fas fa-home tab-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-briefcase tab-icon"></i>
+            <span>工作</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-share-alt tab-icon"></i>
+            <span>分享</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user tab-icon"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

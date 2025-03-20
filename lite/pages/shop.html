@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商城 - 打工人日记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #000;
+            opacity: 0.8;
+            border-radius: 2px;
+        }
+        .tab-bar {
+            height: 80px;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 11px;
+        }
+        .tab-item.active {
+            color: #007AFF;
+        }
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .spinner {
+            animation: spin 4s linear infinite;
+        }
+        .product-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .badge-new {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF3B30;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .purchase-success {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .purchase-success.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        /* 闪烁动画 */
+        .flash {
+            animation: flash 1.5s ease infinite;
+        }
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* 毛玻璃效果 */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .leave-option {
+            transition: all 0.3s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            position: relative;
+        }
+        
+        .leave-option.selected {
+            background: rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .blindbox-animation {
+            animation: blindbox 1s ease;
+        }
+        
+        @keyframes blindbox {
+            0% { transform: scale(0.8) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(10deg); opacity: 1; }
+            75% { transform: scale(0.95) rotate(-5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        
+        .daily-limit-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #007AFF;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .leave-slip-slider {
+            display: flex;
+            overflow-x: hidden;
+            scroll-snap-type: x mandatory;
+            touch-action: pan-x;
+        }
+
+        .leave-slip {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-icons">
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+            <span class="status-icon"></span>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="px-5 pt-4 pb-24">
+        <!-- 顶部栏 -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">续命商城</h1>
+            <div class="flex items-center bg-amber-50 py-1 px-3 rounded-full">
+                <i class="fas fa-coins text-amber-500 mr-2"></i>
+                <span class="font-medium" id="coin-display">356</span>
+            </div>
+        </div>
+
+        <!-- 商品分类 -->
+        <div class="flex space-x-2 mb-6 overflow-x-auto py-1 no-scrollbar">
+            <button class="tab-item bg-blue-500 text-white py-1 px-4 rounded-full text-sm font-medium" data-category="all">全部</button>
+            <button class="tab-item bg-gray-100 text-gray-600 py-1 px-4 rounded-full text-sm font-medium" data-category="drinks">饮品</button>
+            <button class="tab-item bg-gray-100 text-gray-600 py-1 px-4 rounded-full text-sm font-medium" data-category="food">食物</button>
+            <button class="tab-item bg-gray-100 text-gray-600 py-1 px-4 rounded-full text-sm font-medium" data-category="tools">道具</button>
+            <button class="tab-item bg-gray-100 text-gray-600 py-1 px-4 rounded-full text-sm font-medium" data-category="limited">限时</button>
+        </div>
+
+        <!-- 商品列表 -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <!-- 投币许愿 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm" data-product="wish" data-price="10" data-sound="coins">
+                <span class="badge-new">新品</span>
+                <div class="flex justify-center mb-3">
+                    <div class="h-24 flex items-center justify-center">
+                        <i class="fas fa-pray text-5xl text-red-500"></i>
+                    </div>
+                </div>
+                <h3 class="font-medium mb-1">金币许愿</h3>
+                <p class="text-gray-500 text-xs mb-3">投币抽取好运签，祝你好运连连</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">10</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full" id="wish-button">
+                        投币许愿
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 金币盲盒 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm" data-product="blindbox" data-price="60" data-sound="coins">
+                <span class="badge-new">限时</span>
+                <span class="daily-limit-badge">今日剩余: <span id="blindbox-limit">5</span></span>
+                <div class="flex justify-center mb-3">
+                    <div class="h-24 flex items-center justify-center">
+                        <i class="fas fa-box-open text-5xl text-amber-500"></i>
+                    </div>
+                </div>
+                <h3 class="font-medium mb-1">金币盲盒</h3>
+                <p class="text-gray-500 text-xs mb-3">60金币开盲盒，随机获得60-150金币</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">60</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full" id="blindbox-button">
+                        开盲盒
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 咖啡 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm" data-product="coffee" data-price="50" data-sound="coffee">
+                <span class="badge-new">热门</span>
+                <div class="flex justify-center mb-3">
+                    <img src="../photo/coffee.jpg" alt="咖啡" class="h-24 object-contain">
+                </div>
+                <h3 class="font-medium mb-1">续命咖啡</h3>
+                <p class="text-gray-500 text-xs mb-3">+2小时精力值</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">50</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full buy-button">
+                        购买
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 泡面 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm" data-product="noodle" data-price="80" data-sound="noodle">
+                <div class="flex justify-center mb-3">
+                    <div class="h-24 flex items-center justify-center text-red-500">
+                        <i class="fas fa-bacon text-5xl"></i>
+                    </div>
+                </div>
+                <h3 class="font-medium mb-1">加班泡面</h3>
+                <p class="text-gray-500 text-xs mb-3">+3小时精力值</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">80</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full buy-button">
+                        购买
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 能量饮料 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm" data-product="energy" data-price="120" data-sound="drink">
+                <div class="flex justify-center mb-3">
+                    <div class="h-24 flex items-center justify-center text-blue-500">
+                        <i class="fas fa-flask text-5xl"></i>
+                    </div>
+                </div>
+                <h3 class="font-medium mb-1">能量饮料</h3>
+                <p class="text-gray-500 text-xs mb-3">+5小时精力值</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">120</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full buy-button">
+                        购买
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 披萨 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm" data-product="pizza" data-price="200" data-sound="eat">
+                <span class="badge-new">新品</span>
+                <div class="flex justify-center mb-3">
+                    <div class="h-24 flex items-center justify-center text-yellow-600">
+                        <i class="fas fa-pizza-slice text-5xl"></i>
+                    </div>
+                </div>
+                <h3 class="font-medium mb-1">通宵披萨</h3>
+                <p class="text-gray-500 text-xs mb-3">+8小时精力值</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">200</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full buy-button">
+                        购买
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 虚拟调休券 -->
+            <div class="product-card bg-white border border-gray-100 rounded-xl p-4 shadow-sm col-span-2" data-product="leave" data-price="150" data-sound="leave">
+                <span class="badge-new">新品</span>
+                <div class="flex justify-center mb-3">
+                    <i class="far fa-spade text-5xl text-red-500"></i>
+                </div>
+                <h3 class="font-medium mb-1">虚拟调休券</h3>
+                <p class="text-gray-500 text-xs mb-3">生成幽默请假单，心理满足感拉满</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-coins text-amber-500 mr-1"></i>
+                        <span class="font-medium text-sm">150</span>
+                    </div>
+                    <button class="bg-blue-500 text-white text-xs py-1 px-3 rounded-full" id="leave-button">
+                        购买
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加班记录 -->
+        <h2 class="text-lg font-semibold mb-3">续命记录</h2>
+        <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+            <div id="record-container">
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-coffee text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">续命咖啡</h3>
+                                <p class="text-xs text-gray-500">今日 09:41</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">续命成功</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 text-center text-gray-400 text-sm" id="no-records" style="display: none;">
+                暂无续命记录，快去购买道具吧！
+            </div>
+        </div>
+    </div>
+
+    <!-- 购买成功弹窗 -->
+    <div class="purchase-success" id="success-popup">
+        <div class="bg-white rounded-2xl p-6 m-6 text-center">
+            <img src="" alt="购买成功" class="h-48 mx-auto mb-4" id="success-image">
+            <h2 class="text-xl font-bold mb-2 flash" id="success-title">今日已续命成功！</h2>
+            <p class="text-gray-600 mb-6" id="success-message">已获得+2小时精力值</p>
+            <button class="bg-blue-500 text-white py-3 px-8 rounded-full font-medium w-full" id="close-popup">
+                继续浏览
+            </button>
+        </div>
+    </div>
+    
+    <!-- 调休券弹窗 -->
+    <div class="purchase-success" id="leave-popup">
+        <div class="bg-white rounded-2xl p-6 m-6">
+            <h2 class="text-xl font-bold mb-6 text-center">生成请假单</h2>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-medium mb-2">选择请假理由</label>
+                <div class="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto pr-1">
+                    <label class="block p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all cursor-pointer">
+                        <div class="flex items-center">
+                            <input type="radio" name="leave-reason" value="老板今天发型太丑影响我工作效率" class="mr-3" checked>
+                            <span class="flex-1">老板今天发型太丑影响工作效率</span>
+                        </div>
+                    </label>
+                    
+                    <label class="block p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all cursor-pointer">
+                        <div class="flex items-center">
+                            <input type="radio" name="leave-reason" value="我的猫咪坐在键盘上不让我工作" class="mr-3">
+                            <span class="flex-1">猫咪坐在键盘上不让我工作</span>
+                        </div>
+                    </label>
+                    
+                    <label class="block p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all cursor-pointer">
+                        <div class="flex items-center">
+                            <input type="radio" name="leave-reason" value="我的代码太完美了怕上班路上被抢" class="mr-3">
+                            <span class="flex-1">代码太完美了怕上班路上被抢</span>
+                        </div>
+                    </label>
+                    
+                    <label class="block p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all cursor-pointer">
+                        <div class="flex items-center">
+                            <input type="radio" name="leave-reason" value="昨天梦见自己在办公室拖地，感觉已经上班了" class="mr-3">
+                            <span class="flex-1">梦见自己拖地，感觉已经上班了</span>
+                        </div>
+                    </label>
+                    
+                    <label class="block p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all cursor-pointer">
+                        <div class="flex items-center">
+                            <input type="radio" name="leave-reason" value="星座师说今天不宜敲代码" class="mr-3">
+                            <span class="flex-1">星座师说今天不宜敲代码</span>
+                        </div>
+                    </label>
+                    
+                    <label class="block p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all cursor-pointer" id="custom-reason-label">
+                        <div class="flex items-center">
+                            <input type="radio" name="leave-reason" value="自定义" class="mr-3">
+                            <span class="flex-1">自定义理由...</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mb-4 hidden" id="custom-reason-container">
+                <textarea id="custom-reason" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 h-20" placeholder="请输入您的请假理由..."></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">请假人</label>
+                <input type="text" id="leave-person" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="您的名字" value="小喵">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-medium mb-2">请假天数</label>
+                <div class="flex items-center">
+                    <button id="decrease-days" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span id="leave-days" class="mx-6 text-xl font-bold">1</span>
+                    <button id="increase-days" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 hover:bg-gray-300 transition-colors">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors" id="cancel-leave">
+                    取消
+                </button>
+                <button class="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors" id="generate-leave">
+                    生成请假单
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 请假单结果弹窗 -->
+    <div class="purchase-success" id="leave-result-popup">
+        <div class="bg-white rounded-2xl p-6 m-6 text-center">
+            <div id="leave-certificate" class="border-8 border-double border-red-600 p-6 bg-amber-50 rounded-lg mb-4 text-left relative overflow-hidden">
+                <!-- 背景水印 -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                    <img src="../photo/mao.jpg" alt="头像" class="avatar">
+                </div>
+                
+                <!-- 角落装饰 -->
+                <div class="absolute top-0 left-0 w-16 h-16 border-r-4 border-b-4 border-red-600 rounded-br-xl opacity-30"></div>
+                <div class="absolute top-0 right-0 w-16 h-16 border-l-4 border-b-4 border-red-600 rounded-bl-xl opacity-30"></div>
+                <div class="absolute bottom-0 left-0 w-16 h-16 border-r-4 border-t-4 border-red-600 rounded-tr-xl opacity-30"></div>
+                <div class="absolute bottom-0 right-0 w-16 h-16 border-l-4 border-t-4 border-red-600 rounded-tl-xl opacity-30"></div>
+                
+                <!-- 已批准印章 -->
+                <div class="absolute top-10 right-10 text-red-600 text-5xl font-bold opacity-30 rotate-12 border-4 border-red-600 rounded-lg py-1 px-4">
+                    已批准
+                </div>
+                
+                <h2 class="text-center text-3xl font-bold mb-8 text-red-600 relative">
+                    <span class="absolute left-0 right-0 bottom-2 h-1 bg-red-600 opacity-20"></span>
+                    请假申请单
+                </h2>
+                
+                <div class="space-y-6">
+                    <p class="flex items-center text-lg">
+                        <span class="font-medium w-24 inline-block">请假人：</span>
+                        <span id="result-person" class="border-b-2 border-red-300 px-2 py-1">小喵</span>
+                    </p>
+                    
+                    <p class="flex items-center text-lg">
+                        <span class="font-medium w-24 inline-block">请假天数：</span>
+                        <span id="result-days" class="border-b-2 border-red-300 px-2 py-1">1</span> 天
+                    </p>
+                    
+                    <p class="flex items-start text-lg">
+                        <span class="font-medium w-24 inline-block">请假理由：</span>
+                        <span id="result-reason" class="text-red-600 font-medium border-b-2 border-red-300 px-2 py-1">老板今天发型太丑影响我工作效率</span>
+                    </p>
+                </div>
+                
+                <div class="mt-10 flex justify-between items-center">
+                    <div class="text-gray-600">
+                        <div>申请日期：<span id="result-date" class="font-medium">2023年6月15日</span></div>
+                        <div class="mt-1">审批日期：<span class="font-medium">即刻生效</span></div>
+                    </div>
+                    <div class="w-24 h-24 relative">
+                        <img src="https://i.imgur.com/lhOY9o8.png" alt="章" class="w-full h-full">
+                        <div class="absolute bottom-0 right-0 text-xs text-red-600">编号: MR-2023</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium" id="close-leave-result">
+                    关闭
+                </button>
+                <button class="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium flex items-center justify-center" id="share-leave">
+                    <i class="fas fa-share-alt mr-2"></i>
+                    分享
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 好运签弹窗 -->
+    <div class="purchase-success" id="wish-result-popup">
+        <div class="bg-white rounded-2xl p-6 m-6 text-center">
+            <div id="fortune-paper" class="bg-amber-50 border-4 border-red-600 p-6 rounded-lg mb-4 text-center relative overflow-hidden">
+                <!-- 背景装饰 -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                    <i class="fas fa-sun text-9xl text-red-500"></i>
+                </div>
+                
+                <!-- 角落装饰 -->
+                <div class="absolute top-0 left-0 w-10 h-10 border-r-2 border-b-2 border-red-600 rounded-br-xl opacity-30"></div>
+                <div class="absolute top-0 right-0 w-10 h-10 border-l-2 border-b-2 border-red-600 rounded-bl-xl opacity-30"></div>
+                <div class="absolute bottom-0 left-0 w-10 h-10 border-r-2 border-t-2 border-red-600 rounded-tr-xl opacity-30"></div>
+                <div class="absolute bottom-0 right-0 w-10 h-10 border-l-2 border-t-2 border-red-600 rounded-tl-xl opacity-30"></div>
+                
+                <h2 class="text-center text-2xl font-bold mb-6 text-red-600">今日运势</h2>
+                
+                <div class="text-center mb-4">
+                    <div class="inline-block bg-red-600 text-white text-xl font-bold py-2 px-4 rounded-lg mb-2">
+                        <span id="fortune-level">大吉</span>
+                    </div>
+                    <p class="text-sm text-gray-500">愿所有美好与你相伴</p>
+                </div>
+                
+                <div class="border-t border-b border-red-300 py-4 mb-4">
+                    <p class="text-red-600 text-xl font-bold" id="fortune-text">明天食堂阿姨手不抖，饭菜分量翻一倍！</p>
+                </div>
+                
+                <div class="text-gray-600 text-sm">
+                    <p>打工人日记 · 福运签</p>
+                    <p id="fortune-date">2023年6月15日</p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium" id="close-wish-result">
+                    关闭
+                </button>
+                <button class="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium flex items-center justify-center" id="share-wish">
+                    <i class="fas fa-share-alt mr-2"></i>
+                    分享
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item" id="home-tab">
+            <i class="fas fa-home tab-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-briefcase tab-icon"></i>
+            <span>工作</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-store tab-icon"></i>
+            <span>商城</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user tab-icon"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <!-- 音效文件 -->
+    <audio id="coffee-sound" preload="auto">
+        <source src="https://www.myinstants.com/media/sounds/minecraft-drinking-potion.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="noodle-sound" preload="auto">
+        <source src="https://soundbible.com/grab.php?id=1522&type=mp3" type="audio/mpeg">
+    </audio>
+    <audio id="drink-sound" preload="auto">
+        <source src="https://soundbible.com/grab.php?id=2188&type=mp3" type="audio/mpeg">
+    </audio>
+    <audio id="eat-sound" preload="auto">
+        <source src="https://soundbible.com/grab.php?id=1571&type=mp3" type="audio/mpeg">
+    </audio>
+    <audio id="leave-sound" preload="auto">
+        <source src="https://soundbible.com/grab.php?id=1997&type=mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="leave-slip-slider">
+        <div class="leave-slip" style="transform: translateX(0%);">
+            <!-- 第一种风格的请假单 -->
+        </div>
+        <div class="leave-slip" style="transform: translateX(100%);">
+            <!-- 第二种风格的请假单 -->
+        </div>
+        <div class="leave-slip" style="transform: translateX(200%);">
+            <!-- 第三种风格的请假单 -->
+        </div>
+    </div>
+
+    <!-- 引导页 -->
+    <div id="guide-page" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center hidden">
+        <h2 class="text-2xl font-bold mb-4">欢迎来到打工人日记</h2>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2">头像</label>
+            <input type="file" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2">昵称</label>
+            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入您的昵称">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2">性别</label>
+            <select class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="male">男</option>
+                <option value="female">女</option>
+                <option value="other">其他</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2">城市</label>
+            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入您所在的城市">
+        </div>
+        <button class="bg-blue-500 text-white py-2 px-4 rounded-full font-medium" id="start-button">开始使用</button>
+    </div>
+
+    <script>
+        // 获取元素
+        const buyButtons = document.querySelectorAll('.buy-button');
+        const coinDisplay = document.getElementById('coin-display');
+        const successPopup = document.getElementById('success-popup');
+        const closePopupBtn = document.getElementById('close-popup');
+        const successImage = document.getElementById('success-image');
+        const successTitle = document.getElementById('success-title');
+        const successMessage = document.getElementById('success-message');
+        const recordContainer = document.getElementById('record-container');
+        const noRecords = document.getElementById('no-records');
+        const homeTab = document.getElementById('home-tab');
+        const blindboxButton = document.getElementById('blindbox-button');
+        const blindboxLimit = document.getElementById('blindbox-limit');
+        
+        // 获取调休券元素
+        const leaveButton = document.getElementById('leave-button');
+        const leavePopup = document.getElementById('leave-popup');
+        const cancelLeave = document.getElementById('cancel-leave');
+        const generateLeave = document.getElementById('generate-leave');
+        const leaveReasonSelect = document.getElementById('leave-reason');
+        const customReasonContainer = document.getElementById('custom-reason-container');
+        const customReason = document.getElementById('custom-reason');
+        const decreaseDays = document.getElementById('decrease-days');
+        const increaseDays = document.getElementById('increase-days');
+        const leaveDays = document.getElementById('leave-days');
+        
+        // 请假单结果弹窗元素
+        const leaveResultPopup = document.getElementById('leave-result-popup');
+        const closeLeaveResult = document.getElementById('close-leave-result');
+        const shareLeave = document.getElementById('share-leave');
+        const resultPerson = document.getElementById('result-person');
+        const resultDays = document.getElementById('result-days');
+        const resultReason = document.getElementById('result-reason');
+        const resultDate = document.getElementById('result-date');
+        const leaveCertificate = document.getElementById('leave-certificate');
+        
+        // 获取投币许愿元素
+        const wishButton = document.getElementById('wish-button');
+        const wishResultPopup = document.getElementById('wish-result-popup');
+        const closeWishResult = document.getElementById('close-wish-result');
+        const shareWish = document.getElementById('share-wish');
+        const fortuneLevel = document.getElementById('fortune-level');
+        const fortuneText = document.getElementById('fortune-text');
+        const fortuneDate = document.getElementById('fortune-date');
+        const fortunePaper = document.getElementById('fortune-paper');
+        
+        // 金币数量 - 初始设置为1000
+        let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 1000;
+        coinDisplay.textContent = coins;
+        
+        // 盲盒每日限制
+        let blindboxRemaining = localStorage.getItem('blindboxRemaining') ? 
+            parseInt(localStorage.getItem('blindboxRemaining')) : 5;
+        
+        // 好运签文案
+        const fortuneTexts = [
+            "明天食堂阿姨手不抖，饭菜分量翻一倍！",
+            "今日代码无BUG，老板夸你写得好！",
+            "下周加薪有望，升职在望，一切皆有可能！",
+            "今日早起不迟到，打卡不用补！",
+            "今天回复老板消息，秒回秒赞秒红包！",
+            "今天上厕所遇到CEO，升职机会来了！",
+            "下班路上避开所有红灯，早点到家！",
+            "明日早会领导点名表扬，同事都很羡慕！",
+            "今天午休睡得香，精力充沛下午不犯困！",
+            "电脑运行速度快，系统不会无响应！",
+            "今天领导心情好，提前下班有可能！",
+            "今天同事带零食，都会给你吃一口！"
+        ];
+        
+        // 运势等级
+        const fortuneLevels = [
+            { level: "大吉", color: "bg-red-600" },
+            { level: "中吉", color: "bg-orange-500" },
+            { level: "小吉", color: "bg-yellow-500" },
+            { level: "吉", color: "bg-green-500" },
+            { level: "末吉", color: "bg-blue-500" }
+        ];
+        
+        // 检查日期，重置盲盒次数
+        const checkAndResetBlindboxLimit = () => {
+            const now = new Date();
+            const today = now.toDateString();
+            const lastOpenDate = localStorage.getItem('lastBlindboxDate');
+            
+            if (lastOpenDate !== today) {
+                blindboxRemaining = 5;
+                localStorage.setItem('blindboxRemaining', blindboxRemaining);
+                localStorage.setItem('lastBlindboxDate', today);
+            }
+            
+            blindboxLimit.textContent = blindboxRemaining;
+            
+            // 如果已用完，禁用按钮
+            if (blindboxRemaining <= 0) {
+                blindboxButton.disabled = true;
+                blindboxButton.classList.remove('bg-blue-500');
+                blindboxButton.classList.add('bg-gray-300');
+                blindboxButton.textContent = '已用完';
+            }
+        };
+        
+        // 页面加载时检查盲盒限制
+        checkAndResetBlindboxLimit();
+        
+        // 盲盒功能
+        blindboxButton.addEventListener('click', function() {
+            if (blindboxRemaining <= 0) {
+                alert('今日开盒次数已用完，明天再来吧！');
+                return;
+            }
+            
+            // 检查金币是否足够
+            if (coins >= 60) {
+                // 扣除金币
+                coins -= 60;
+                
+                // 随机获得60-150金币（整10倍数）
+                const possibleValues = [60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
+                const randomIndex = Math.floor(Math.random() * possibleValues.length);
+                const reward = possibleValues[randomIndex];
+                
+                // 增加随机金币
+                coins += reward;
+                
+                // 减少今日剩余次数
+                blindboxRemaining--;
+                localStorage.setItem('blindboxRemaining', blindboxRemaining);
+                blindboxLimit.textContent = blindboxRemaining;
+                
+                // 记录最后一次开盒日期
+                localStorage.setItem('lastBlindboxDate', new Date().toDateString());
+                
+                // 如果已用完，禁用按钮
+                if (blindboxRemaining <= 0) {
+                    blindboxButton.disabled = true;
+                    blindboxButton.classList.remove('bg-blue-500');
+                    blindboxButton.classList.add('bg-gray-300');
+                    blindboxButton.textContent = '已用完';
+                }
+                
+                // 显示成功弹窗
+                successImage.innerHTML = '<i class="fas fa-box-open text-7xl text-amber-500 blindbox-animation"></i>';
+                successTitle.textContent = '恭喜获得' + reward + '金币！';
+                
+                if (reward >= 120) {
+                    successMessage.textContent = '今天手气不错，获得高额奖励！';
+                } else if (reward >= 90) {
+                    successMessage.textContent = '获得了不错的金币奖励！';
+                } else {
+                    successMessage.textContent = '再接再厉，下次会更好！';
+                }
+                
+                // 更新金币显示
+                coinDisplay.textContent = coins;
+                localStorage.setItem('coins', coins);
+                
+                // 播放音效
+                playSound('coins');
+                
+                // 显示成功弹窗
+                successPopup.classList.add('active');
+                
+                // 创建烟花效果
+                createFireworks();
+                
+                // 添加购买记录
+                addPurchaseRecord('金币盲盒 +' + reward, 'fa-box-open');
+            } else {
+                alert('金币不足，请继续赚取金币！');
+            }
+        });
+        
+        // 请假天数
+        let days = 1;
+        
+        // 创建烟花效果
+        function createFireworks() {
+            const colors = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // 随机位置
+                    const x = 20 + Math.random() * (window.innerWidth - 40);
+                    const y = 20 + Math.random() * (window.innerHeight - 40);
+                    firework.style.left = `${x}px`;
+                    firework.style.top = `${y}px`;
+                    
+                    document.body.appendChild(firework);
+                    
+                    // 烟花动画
+                    const duration = 500 + Math.random() * 1000;
+                    const size = 3 + Math.random() * 5;
+                    
+                    firework.animate([
+                        { transform: 'scale(0)', opacity: 1 },
+                        { transform: `scale(${size})`, opacity: 0 }
+                    ], {
+                        duration,
+                        easing: 'cubic-bezier(0,0,0.2,1)'
+                    });
+                    
+                    // 动画结束后移除元素
+                    setTimeout(() => {
+                        document.body.removeChild(firework);
+                    }, duration);
+                }, Math.random() * 1500);
+            }
+        }
+        
+        // 播放音效
+        function playSound(productType) {
+            const sounds = {
+                coffee: document.getElementById('coffee-sound'),
+                noodle: document.getElementById('noodle-sound'),
+                drink: document.getElementById('drink-sound'),
+                eat: document.getElementById('eat-sound'),
+                leave: document.getElementById('leave-sound'),
+                coins: document.getElementById('noodle-sound')
+            };
+            
+            const sound = sounds[productType];
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play();
+            }
+        }
+        
+        // 购买商品
+        function buyProduct(product, price, sound) {
+            // 检查金币是否足够
+            if (coins >= price) {
+                // 扣除金币
+                coins -= price;
+                
+                // 根据商品类型设置成功提示
+                const products = {
+                    coffee: { 
+                        image: '../photo/coffee.jpg',
+                        title: '咖啡续命成功！',
+                        message: '精力+2小时'
+                    },
+                    noodle: {
+                        image: '<i class="fas fa-bacon text-7xl text-red-500"></i>',
+                        title: '泡面续命成功！',
+                        message: '精力+3小时'
+                    },
+                    energy: {
+                        image: '<i class="fas fa-flask text-7xl text-blue-500"></i>',
+                        title: '能量饮料续命成功！',
+                        message: '精力+5小时'
+                    },
+                    pizza: {
+                        image: '<i class="fas fa-pizza-slice text-7xl text-yellow-600"></i>',
+                        title: '披萨续命成功！',
+                        message: '精力+8小时'
+                    }
+                };
+                
+                const productInfo = products[product] || {
+                    image: '<i class="fas fa-utensils text-7xl text-green-500"></i>',
+                    title: '续命成功！',
+                    message: '精力值已恢复'
+                };
+                
+                // 检查是否是HTML内容
+                if (productInfo.image.startsWith('<')) {
+                    successImage.innerHTML = productInfo.image;
+                } else {
+                    successImage.innerHTML = '';
+                    successImage.src = productInfo.image;
+                }
+                
+                successTitle.textContent = productInfo.title;
+                successMessage.textContent = productInfo.message;
+                
+                // 更新金币显示
+                coinDisplay.textContent = coins;
+                localStorage.setItem('coins', coins);
+                
+                // 播放音效
+                playSound(sound);
+                
+                // 显示成功弹窗
+                successPopup.classList.add('active');
+                
+                // 创建烟花效果
+                createFireworks();
+                
+                // 添加购买记录
+                let iconClass = '';
+                switch(product) {
+                    case 'coffee': iconClass = 'fa-coffee'; break;
+                    case 'noodle': iconClass = 'fa-bacon'; break;
+                    case 'energy': iconClass = 'fa-flask'; break;
+                    case 'pizza': iconClass = 'fa-pizza-slice'; break;
+                    default: iconClass = 'fa-utensils';
+                }
+                
+                addPurchaseRecord(productInfo.title.replace('续命成功！', ''), iconClass);
+                
+                return true;
+            } else {
+                alert('金币不足，请继续赚取金币！');
+                return false;
+            }
+        }
+        
+        // 添加购买记录
+        function addPurchaseRecord(product, icon) {
+            // 获取当前时间
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            
+            // 创建记录HTML
+            const recordHTML = `
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas ${icon} text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">${product}</h3>
+                                <p class="text-xs text-gray-500">今日 ${hours}:${minutes}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">续命成功</span>
+                    </div>
+                </div>
+            `;
+            
+            // 将记录添加到容器
+            recordContainer.innerHTML = recordHTML + recordContainer.innerHTML;
+            
+            // 隐藏"暂无记录"提示
+            noRecords.style.display = 'none';
+        }
+        
+        // 绑定购买按钮点击事件
+        buyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productCard = this.closest('.product-card');
+                const product = productCard.dataset.product;
+                const price = parseInt(productCard.dataset.price);
+                const sound = productCard.dataset.sound;
+                
+                buyProduct(product, price, sound);
+            });
+        });
+        
+        // 关闭弹窗
+        closePopupBtn.addEventListener('click', function() {
+            successPopup.classList.remove('active');
+        });
+        
+        // 返回首页
+        homeTab.addEventListener('click', function() {
+            window.location.href = 'home.html';
+        });
+        
+        // 从localStorage获取金币
+        window.addEventListener('load', function() {
+            const storedCoins = localStorage.getItem('coins');
+            if (storedCoins) {
+                coins = parseInt(storedCoins);
+                coinDisplay.textContent = coins;
+            }
+        });
+        
+        // 点击购买调休券
+        leaveButton.addEventListener('click', function() {
+            // 检查金币是否足够
+            if (coins >= 150) {
+                // 扣除金币
+                coins -= 150;
+                coinDisplay.textContent = coins;
+                localStorage.setItem('coins', coins);
+                
+                // 显示调休券弹窗
+                leavePopup.classList.add('active');
+            } else {
+                alert('金币不足，请继续赚取金币！');
+            }
+        });
+        
+        // 选择请假理由变化
+        document.querySelectorAll('input[name="leave-reason"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // 处理自定义选项
+                if (this.value === '自定义') {
+                    customReasonContainer.classList.remove('hidden');
+                } else {
+                    customReasonContainer.classList.add('hidden');
+                }
+            });
+        });
+        
+        // 自定义理由选项点击事件
+        document.getElementById('custom-reason-label').addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // 显示自定义输入框
+            customReasonContainer.classList.remove('hidden');
+        });
+        
+        // 减少请假天数
+        decreaseDays.addEventListener('click', function() {
+            if (days > 1) {
+                days--;
+                leaveDays.textContent = days;
+            }
+        });
+        
+        // 增加请假天数
+        increaseDays.addEventListener('click', function() {
+            days++;
+            leaveDays.textContent = days;
+        });
+        
+        // 取消生成请假单
+        cancelLeave.addEventListener('click', function() {
+            leavePopup.classList.remove('active');
+            
+            // 退还金币
+            coins += 150;
+            coinDisplay.textContent = coins;
+            localStorage.setItem('coins', coins);
+        });
+        
+        // 生成请假单
+        generateLeave.addEventListener('click', function() {
+            // 播放音效
+            playSound('leave');
+            
+            // 获取请假理由
+            const selectedRadio = document.querySelector('input[name="leave-reason"]:checked');
+            let reason = selectedRadio.value;
+            if (reason === '自定义') {
+                reason = customReason.value || '今天不想上班';
+            }
+            
+            // 获取请假人
+            const person = document.getElementById('leave-person').value || '超级马里奥';
+            
+            // 设置请假单内容
+            resultPerson.textContent = person;
+            resultDays.textContent = days;
+            resultReason.textContent = reason;
+            
+            // 设置当前日期
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            resultDate.textContent = `${year}年${month}月${day}日`;
+            
+            // 隐藏请假表单，显示结果
+            leavePopup.classList.remove('active');
+            leaveResultPopup.classList.add('active');
+            
+            // 创建烟花效果
+            createFireworks();
+            
+            // 添加购买记录
+            addPurchaseRecord('虚拟调休券', 'fa-calendar-alt');
+        });
+        
+        // 关闭请假单结果
+        closeLeaveResult.addEventListener('click', function() {
+            leaveResultPopup.classList.remove('active');
+            
+            // 重置请假天数
+            days = 1;
+            leaveDays.textContent = days;
+        });
+        
+        // 分享请假单
+        shareLeave.addEventListener('click', async function() {
+            try {
+                // 使用html2canvas截取请假单
+                const canvas = await html2canvas(leaveCertificate);
+                const imageData = canvas.toDataURL('image/png');
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.href = imageData;
+                link.download = '请假单.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('请假单已保存，可以分享到朋友圈了！');
+            } catch (error) {
+                console.error('分享失败:', error);
+                alert('生成图片失败，请重试');
+            }
+        });
+        
+        // 投币许愿点击事件
+        wishButton.addEventListener('click', function() {
+            // 检查金币是否足够
+            if (coins >= 10) {
+                // 扣除金币
+                coins -= 10;
+                coinDisplay.textContent = coins;
+                localStorage.setItem('coins', coins);
+                
+                // 随机选择一个好运签
+                const randomTextIndex = Math.floor(Math.random() * fortuneTexts.length);
+                const randomText = fortuneTexts[randomTextIndex];
+                
+                // 随机选择一个运势等级
+                const randomLevelIndex = Math.floor(Math.random() * fortuneLevels.length);
+                const randomLevel = fortuneLevels[randomLevelIndex];
+                
+                // 设置运势内容
+                fortuneText.textContent = randomText;
+                fortuneLevel.textContent = randomLevel.level;
+                fortuneLevel.parentElement.className = `inline-block ${randomLevel.color} text-white text-xl font-bold py-2 px-4 rounded-lg mb-2`;
+                
+                // 设置当前日期
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth() + 1;
+                const day = now.getDate();
+                fortuneDate.textContent = `${year}年${month}月${day}日`;
+                
+                // 播放音效
+                playSound('coins');
+                
+                // 显示好运签结果
+                wishResultPopup.classList.add('active');
+                
+                // 创建烟花效果
+                createFireworks();
+                
+                // 添加购买记录
+                addPurchaseRecord('金币许愿', 'fa-pray');
+            } else {
+                alert('金币不足，请继续赚取金币！');
+            }
+        });
+        
+        // 关闭好运签结果
+        closeWishResult.addEventListener('click', function() {
+            wishResultPopup.classList.remove('active');
+        });
+        
+        // 分享好运签
+        shareWish.addEventListener('click', async function() {
+            try {
+                // 使用html2canvas截取好运签
+                const canvas = await html2canvas(fortunePaper);
+                const imageData = canvas.toDataURL('image/png');
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.href = imageData;
+                link.download = '今日好运签.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('好运签已保存，可以分享到朋友圈了！');
+            } catch (error) {
+                console.error('分享失败:', error);
+                alert('生成图片失败，请重试');
+            }
+        });
+
+        let currentIndex = 0;
+        const leaveSlips = document.querySelectorAll('.leave-slip');
+
+        function showLeaveSlip(index) {
+            leaveSlips.forEach((slip, i) => {
+                slip.style.transform = `translateX(${(i - index) * 100}%)`;
+            });
+        }
+
+        // 添加滑动事件监听器
+        const slider = document.querySelector('.leave-slip-slider');
+        let startX;
+
+        slider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        slider.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            if (endX < startX - 50) {
+                currentIndex = (currentIndex + 1) % leaveSlips.length;
+            } else if (endX > startX + 50) {
+                currentIndex = (currentIndex - 1 + leaveSlips.length) % leaveSlips.length;
+            }
+            showLeaveSlip(currentIndex);
+        });
+
+        const tabs = document.querySelectorAll('.tab-item');
+        const productCards = document.querySelectorAll('.product-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('bg-blue-500', 'text-white'));
+                this.classList.add('bg-blue-500', 'text-white');
+
+                const category = this.dataset.category;
+                productCards.forEach(card => {
+                    if (category === 'all' || card.dataset.product === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 显示引导页
+        window.addEventListener('load', function() {
+            const isFirstVisit = !localStorage.getItem('visited');
+            if (isFirstVisit) {
+                document.getElementById('guide-page').classList.remove('hidden');
+            }
+
+            document.getElementById('start-button').addEventListener('click', function() {
+                localStorage.setItem('visited', 'true');
+                document.getElementById('guide-page').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html> 

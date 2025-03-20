@@ -1,0 +1,294 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f2f2f7;
+    color: #000;
+}
+
+.container {
+    max-width: 414px;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100vh;
+}
+
+/* iOS状态栏 */
+.status-bar {
+    height: 44px;
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 17px;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.status-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.signal, .wifi, .battery {
+    width: 18px;
+    height: 18px;
+    background-color: #000;
+    opacity: 0.8;
+    border-radius: 2px;
+}
+
+/* Banner样式 */
+.banner {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.working-status {
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+    border-radius: 16px;
+    color: white;
+    margin: 16px;
+}
+
+.character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.mario-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.mario-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.coins {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.coins img {
+    width: 24px;
+    height: 24px;
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+.coin-count {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* iOS风格按钮 */
+.ios-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ios-button:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.ios-button.primary {
+    background: #007AFF;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+.ios-button.secondary {
+    background: rgba(255, 255, 255, 0.8);
+    color: #007AFF;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+}
+
+.icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+}
+
+/* iOS风格输入框 */
+.ios-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #e5e5ea;
+    font-size: 17px;
+    margin-bottom: 12px;
+    background: #f2f2f7;
+}
+
+/* 图片生成器区域 */
+.image-generator {
+    background: white;
+    border-radius: 16px;
+    margin: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #1c1c1e;
+}
+
+.subsection-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #3a3a3c;
+}
+
+.image-gallery {
+    margin-bottom: 20px;
+}
+
+.image-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.image-option {
+    border-radius: 12px;
+    overflow: hidden;
+    height: 80px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.image-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-option.selected {
+    border-color: #007AFF;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
+}
+
+.preview-area {
+    background: #f2f2f7;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.preview-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+}
+
+.preview-text {
+    position: relative;
+    margin-top: 12px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    z-index: 2;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    max-width: 90%;
+}
+
+.sticker {
+    position: absolute;
+    z-index: 3;
+    width: 60px;
+    height: 60px;
+}
+
+.mario-sticker {
+    bottom: 20px;
+    right: 20px;
+    animation: bounce 2s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 响应式设计 */
+@media (max-width: 414px) {
+    .container {
+        width: 100%;
+    }
+    
+    .banner {
+        padding: 16px;
+    }
+    
+    .image-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+} 
