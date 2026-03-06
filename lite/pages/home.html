@@ -2,138 +2,12 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>首页 - 打工人日记</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
     <style>
-        .status-bar {
-            height: 44px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px;
-            font-size: 17px;
-            font-weight: 600;
-        }
-        .status-icons {
-            display: flex;
-            gap: 8px;
-        }
-        .status-icon {
-            width: 18px;
-            height: 18px;
-            background-color: #000;
-            opacity: 0.8;
-            border-radius: 2px;
-        }
-        .tab-bar {
-            height: 80px;
-            background: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid #f0f0f0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #888;
-            font-size: 11px;
-        }
-        .tab-item.active {
-            color: #007AFF;
-        }
-        .tab-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-        @keyframes spin {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
-        .spinner {
-            animation: spin 4s linear infinite;
-        }
-        .star {
-            position: absolute;
-            pointer-events: none;
-            animation: star-animation 1s ease-out forwards;
-            opacity: 0;
-        }
-        @keyframes star-animation {
-            0% {
-                transform: translate(0, 0) scale(0.2);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(1);
-                opacity: 0;
-            }
-        }
-        /* 金币增加动画 */
-        .coin-increase {
-            animation: coin-pop 0.5s ease-out;
-        }
-        @keyframes coin-pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        /* 金币雨动画 */
-        .coin {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: url('https://i.imgur.com/gBp5daH.png') no-repeat center/contain;
-            pointer-events: none;
-            z-index: 100;
-            animation: coin-fall 2s ease-in forwards;
-        }
-        
-        @keyframes coin-fall {
-            0% {
-                transform: translateY(-20px) rotate(0deg);
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(var(--fall-height)) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        /* 金币增加提示 */
-        .coin-tooltip {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 16px;
-            font-weight: bold;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 1000;
-            transition: opacity 0.3s ease;
-        }
-        
-        .coin-tooltip.active {
-            opacity: 1;
-        }
-        
         .work-button {
             background: linear-gradient(135deg, #FF9500, #FF3B30);
             color: white;
@@ -145,50 +19,27 @@
             box-shadow: 0 4px 10px rgba(255, 59, 48, 0.3);
             transition: all 0.3s ease;
         }
-        
         .work-button:active {
             transform: scale(0.95);
             box-shadow: 0 2px 5px rgba(255, 59, 48, 0.3);
         }
-        
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(255, 59, 48, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
-            }
+        .work-button.resting {
+            background: linear-gradient(135deg, #4CD964, #34D399);
+            box-shadow: 0 4px 10px rgba(76, 217, 100, 0.3);
         }
     </style>
 </head>
 <body class="bg-white text-gray-900">
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div class="time">9:41</div>
-       
-        <div class="status-icons">
-            <i class="fa-solid fa-battery-three-quarters "></i>
-            
-        </div>
-    </div>
+    <div class="status-bar" id="status-bar"></div>
 
     <!-- 欢迎卡片 -->
-    <div class="p-5" style=" padding-bottom: 0px;" >
-        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5 mb-0 " >
+    <div class="p-5 pb-0">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-5">
             <div class="flex items-center mb-4">
-                <div class="w-14 h-14 bg-white rounded-full overflow-hidden border-2 border-white">
-                    <img src="../photo/mao.jpg" alt="猫咪头像" class="w-full h-full object-cover">
-                </div>
+                <div class="w-14 h-14 bg-white rounded-full overflow-hidden border-2 border-white flex items-center justify-center text-2xl">🐱</div>
                 <div class="ml-4 text-white">
-                    <h2 class="text-xl font-bold">早上好，小喵</h2>
-                    <p class="text-blue-100 text-sm">今天也要元气满满地打工呀！</p>
+                    <h2 class="text-xl font-bold"><span id="greeting">早上好</span>，小喵</h2>
+                    <p class="text-blue-100 text-sm" id="greeting-sub">今天也要元气满满地打工呀！</p>
                 </div>
             </div>
             <div class="flex justify-between">
@@ -198,48 +49,58 @@
                 </div>
                 <div class="text-white text-center">
                     <p class="text-blue-100 text-xs">本周工时</p>
-                    <p class="text-xl font-bold">32h</p>
+                    <p class="text-xl font-bold" id="week-hours">0h</p>
                 </div>
                 <div class="text-white text-center">
                     <p class="text-blue-100 text-xs">在线人数</p>
-                    <p class="text-md font-bold" id="online-count">3,852 人在线</p>
+                    <p class="text-md font-bold" id="online-count-header">3,852 人在线</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 主要内容 -->
-    <div class="px-5 pt-2 pb-20">
+    <!-- 精力值条 -->
+    <div class="px-5 mt-3">
+        <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-gray-500"><i class="fas fa-bolt text-amber-500 mr-1"></i>精力值</span>
+            <span class="text-xs font-medium" id="energy-text">80/100</span>
+        </div>
+        <div class="energy-bar-container">
+            <div class="energy-bar high" id="energy-bar" style="width: 80%"></div>
+        </div>
+    </div>
+
+    <div class="px-5 pt-2 pb-24">
         <!-- 今日状态 -->
-        <div class="mb-8 mt-4">
+        <div class="mb-6 mt-4">
             <h1 class="text-2xl font-bold mb-4">今日状态</h1>
             <div class="bg-blue-50 rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center">
-                        <img src="../photo/mao.jpg" alt="猫咪" class="w-12 h-12 mr-3 rounded-full">
+                        <div class="w-12 h-12 mr-3 rounded-full bg-blue-100 flex items-center justify-center text-2xl">🐱</div>
                         <div>
-                            <h2 class="font-semibold text-lg">打工模式</h2>
-                            <p class="text-gray-500 text-sm">一天工作8小时，效率翻倍</p>
+                            <h2 class="font-semibold text-lg" id="work-mode-title">打工模式</h2>
+                            <p class="text-gray-500 text-sm" id="work-mode-desc">点击按钮开始工作</p>
                         </div>
                     </div>
-                    <div class="w-14 h-7 bg-green-100 rounded-full flex items-center justify-center">
-                        <span class="text-green-700 text-xs font-medium">进行中</span>
+                    <div class="h-7 px-3 rounded-full flex items-center justify-center" id="work-status-badge">
+                        <span class="text-xs font-medium" id="work-status-text">待开始</span>
                     </div>
                 </div>
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500 text-sm mb-1">今日已工作</p>
-                        <p class="text-2xl font-bold">5h 23m</p>
+                        <p class="text-2xl font-bold" id="today-worked">0m</p>
                     </div>
-                    <button class="work-button pulse-animation" id="work-button">
+                    <button class="work-button" id="work-button">
                         <i class="fas fa-bolt mr-2"></i>
-                        正在打工
+                        <span id="work-btn-text">开始打工</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- 在线人数展示 -->
+        <!-- 在线人数 -->
         <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm mb-6 relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -248,13 +109,13 @@
                     </div>
                     <div>
                         <h3 class="font-medium">一起打工的小伙伴</h3>
-                        <p class="text-sm text-gray-500" id="online-count">3,872 人在线</p>
+                        <p class="text-sm text-gray-500" id="online-count-body">3,872 人在线</p>
                     </div>
                 </div>
                 <div class="flex -space-x-2">
-                    <img src="../photo/mao.jpg" class="w-8 h-8 rounded-full border-2 border-white">
-                    <img src="../photo/mao.jpg" class="w-8 h-8 rounded-full border-2 border-white">
-                    <img src="../photo/mao.jpg" class="w-8 h-8 rounded-full border-2 border-white">
+                    <div class="w-8 h-8 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-sm">🐱</div>
+                    <div class="w-8 h-8 rounded-full border-2 border-white bg-pink-100 flex items-center justify-center text-sm">🐶</div>
+                    <div class="w-8 h-8 rounded-full border-2 border-white bg-green-100 flex items-center justify-center text-sm">🐰</div>
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center border-2 border-white text-xs font-medium">+99</div>
                 </div>
             </div>
@@ -262,206 +123,185 @@
 
         <!-- 快捷方式 -->
         <h2 class="text-lg font-semibold mb-3">快捷方式</h2>
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="bg-indigo-50 rounded-xl p-4 flex items-center">
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-indigo-50 rounded-xl p-4 flex items-center clickable" onclick="location.href='work.html'">
                 <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
                     <i class="fas fa-chart-line text-indigo-500"></i>
                 </div>
                 <span class="font-medium">工作统计</span>
             </div>
-            <div class="bg-amber-50 rounded-xl p-4 flex items-center relative" id="coin-container">
+            <div class="bg-amber-50 rounded-xl p-4 flex items-center relative clickable" id="coin-container">
                 <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mr-3" id="coin-button">
                     <i class="fas fa-coins text-amber-500 spinner"></i>
                 </div>
                 <span class="font-medium">金币 <span id="coin-count">1000</span></span>
             </div>
+            <div class="bg-green-50 rounded-xl p-4 flex items-center clickable" onclick="location.href='shop.html'">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-store text-green-500"></i>
+                </div>
+                <span class="font-medium">续命商城</span>
+            </div>
+            <div class="bg-purple-50 rounded-xl p-4 flex items-center clickable" onclick="location.href='profile.html'">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-trophy text-purple-500"></i>
+                </div>
+                <div>
+                    <span class="font-medium">Lv.<span id="level-num">0</span></span>
+                    <p class="text-xs text-gray-500" id="level-title">实习生</p>
+                </div>
+            </div>
         </div>
 
         <!-- 通知 -->
         <h2 class="text-lg font-semibold mb-3">通知</h2>
-        <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-            <div class="flex items-start">
-                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3 mt-1">
-                    <i class="fas fa-bell text-red-500"></i>
-                </div>
-                <div>
-                    <h3 class="font-medium">休息提醒</h3>
-                    <p class="text-sm text-gray-500 mt-1">你已连续工作2小时，建议休息一下眼睛</p>
-                    <p class="text-xs text-gray-400 mt-2">10分钟前</p>
-                </div>
-            </div>
-        </div>
+        <div class="space-y-3" id="notifications"></div>
     </div>
 
-    <!-- 金币提示 -->
-    <div class="coin-tooltip" id="coin-tooltip">
-        <i class="fas fa-coins text-yellow-400 mr-3"></i>
-        <span id="coin-increase-text">+50 金币</span>
-    </div>
+    <div class="tab-bar" id="tab-bar"></div>
 
-    <!-- 底部导航栏 -->
-    <div class="tab-bar">
-        <div class="tab-item active">
-            <i class="fas fa-home tab-icon"></i>
-            <span>首页</span>
-        </div>
-        <div class="tab-item">
-            <i class="fas fa-briefcase tab-icon"></i>
-            <span>工作</span>
-        </div>
-        <div class="tab-item" id="shop-tab">
-            <i class="fas fa-store tab-icon"></i>
-            <span>商城</span>
-        </div>
-        <div class="tab-item">
-            <i class="fas fa-user tab-icon"></i>
-            <span>我的</span>
-        </div>
-    </div>
-
+    <script src="../js/app.js"></script>
     <script>
-        // 获取元素
-        const coinButton = document.getElementById('coin-button');
-        const coinCount = document.getElementById('coin-count');
-        const coinContainer = document.getElementById('coin-container');
-        const onlineCount = document.getElementById('online-count');
-        const shopTab = document.getElementById('shop-tab');
-        const workButton = document.getElementById('work-button');
-        const coinTooltip = document.getElementById('coin-tooltip');
-        
-        // 当前金币数量 - 初始设置为1000
-        let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 1000;
-        
-        // 更新金币显示
-        function updateCoinDisplay() {
-            coinCount.textContent = coins;
-        }
-        
-        // 页面加载时更新金币显示
-        updateCoinDisplay();
-        
-        // 创建星星效果
-        function createStars(element, count = 5) {
-            const rect = element.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            for (let i = 0; i < count; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                
-                // Random angle and distance
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 30 + Math.random() * 70;
-                
-                const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance;
-                
-                star.style.setProperty('--tx', `${tx}px`);
-                star.style.setProperty('--ty', `${ty}px`);
-                
-                star.innerHTML = '<i class="fas fa-star text-yellow-400"></i>';
-                star.style.left = `${centerX}px`;
-                star.style.top = `${centerY}px`;
-                
-                document.body.appendChild(star);
-                
-                setTimeout(() => {
-                    document.body.removeChild(star);
-                }, 1000);
-            }
-        }
-        
-        // 创建金币雨效果
-        function createCoinRain() {
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const coin = document.createElement('div');
-                    coin.className = 'coin';
-                    
-                    // 随机位置和掉落高度
-                    const posX = 50 + Math.random() * (window.innerWidth - 100);
-                    const fallHeight = 300 + Math.random() * 400;
-                    
-                    coin.style.left = `${posX}px`;
-                    coin.style.top = '0';
-                    coin.style.setProperty('--fall-height', `${fallHeight}px`);
-                    
-                    document.body.appendChild(coin);
-                    
-                    setTimeout(() => {
-                        document.body.removeChild(coin);
-                    }, 2000);
-                }, i * 100);
-            }
-        }
-        
-        // 显示金币增加提示
-        function showCoinIncrease(amount) {
-            coinTooltip.querySelector('#coin-increase-text').textContent = `+${amount} 金币`;
-            coinTooltip.classList.add('active');
-            
-            setTimeout(() => {
-                coinTooltip.classList.remove('active');
-            }, 2000);
-        }
-        
-        // 工作按钮点击事件
-        workButton.addEventListener('click', function() {
-            // 增加金币
-            coins += 50;
-            localStorage.setItem('coins', coins);
-            updateCoinDisplay();
-            
-            // 显示特效
-            createCoinRain();
-            showCoinIncrease(50);
-            
-            // 添加金币增加动画
-            coinCount.classList.add('coin-increase');
-            setTimeout(() => {
-                coinCount.classList.remove('coin-increase');
-            }, 500);
-            
-            // 工作按钮动画
-            this.classList.remove('pulse-animation');
-            setTimeout(() => {
-                this.classList.add('pulse-animation');
-            }, 100);
-        });
-        
-        // 金币按钮点击事件
-        coinButton.addEventListener('click', function() {
+        renderTabBar('home');
+
+        /* ========== 问候语 ========== */
+        document.getElementById('greeting').textContent = getGreeting();
+        const greetingSubs = {
+            '夜深了': '还在加班？注意身体呀',
+            '早上好': '今天也要元气满满地打工呀！',
+            '上午好': '上午的效率最高，冲冲冲！',
+            '中午好': '该吃午饭了，别亏待自己',
+            '下午好': '下午茶时间，来杯咖啡续续命',
+            '晚上好': '今天辛苦了，早点休息'
+        };
+        document.getElementById('greeting-sub').textContent = greetingSubs[getGreeting()] || '';
+
+        /* ========== 日期 & 工时 ========== */
+        document.getElementById('current-date').textContent = getWeekday();
+        const weekMins = WorkStats.weekData().reduce((a, b) => a + b, 0);
+        document.getElementById('week-hours').textContent = formatMinutes(weekMins);
+
+        /* ========== 金币 & 等级 ========== */
+        document.getElementById('coin-count').textContent = Coins.current();
+        document.getElementById('level-num').textContent = Level.current();
+        document.getElementById('level-title').textContent = Level.title();
+
+        document.getElementById('coin-button').addEventListener('click', function () {
             createStars(this);
         });
-        
-        // 商店按钮点击事件
-        shopTab.addEventListener('click', function() {
-            window.location.href = 'shop.html';
-        });
-        
-        // 更新日期显示
-        function updateDateDisplay() {
-            const now = new Date();
-            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-            const currentWeekday = weekdays[now.getDay()];
-            document.getElementById('current-date').textContent = currentWeekday;
+
+        /* ========== 精力值 ========== */
+        function updateEnergyUI() {
+            const pct = Energy.percent();
+            const bar = document.getElementById('energy-bar');
+            bar.style.width = pct + '%';
+            bar.className = 'energy-bar ' + (pct > 60 ? 'high' : pct > 30 ? 'medium' : 'low');
+            document.getElementById('energy-text').textContent = `${Energy.current()}/${Energy.MAX}`;
         }
-        
-        // 页面加载时更新日期显示
-        updateDateDisplay();
-        
-        // 随机更新在线人数
+        updateEnergyUI();
+
+        /* ========== 工作状态联动 ========== */
+        const workBtn = document.getElementById('work-button');
+        const statusBadge = document.getElementById('work-status-badge');
+        const statusText = document.getElementById('work-status-text');
+
+        function updateWorkUI() {
+            const active = WorkTimer.isActive();
+            const todayData = WorkStats.todayData();
+            let todaySec = todayData.totalSec;
+
+            if (active) {
+                todaySec += Math.floor(WorkTimer.elapsed() / 1000);
+                statusBadge.className = 'h-7 px-3 bg-green-100 rounded-full flex items-center justify-center';
+                statusText.className = 'text-xs font-medium text-green-700';
+                statusText.textContent = '进行中';
+                document.getElementById('work-mode-desc').textContent = '专注工作中，保持高效！';
+                document.getElementById('work-btn-text').textContent = '正在打工';
+                workBtn.classList.add('pulse-animation');
+                workBtn.classList.remove('resting');
+            } else {
+                statusBadge.className = 'h-7 px-3 bg-gray-100 rounded-full flex items-center justify-center';
+                statusText.className = 'text-xs font-medium text-gray-500';
+                statusText.textContent = todaySec > 0 ? '已暂停' : '待开始';
+                document.getElementById('work-mode-desc').textContent = todaySec > 0 ? '休息一下，继续加油' : '点击按钮开始工作';
+                document.getElementById('work-btn-text').textContent = todaySec > 0 ? '继续打工' : '开始打工';
+                workBtn.classList.remove('pulse-animation');
+                if (todaySec > 0) workBtn.classList.add('resting');
+            }
+            document.getElementById('today-worked').textContent = formatDuration(todaySec);
+        }
+        updateWorkUI();
+        setInterval(updateWorkUI, 1000);
+
+        workBtn.addEventListener('click', function () {
+            if (WorkTimer.isActive()) {
+                const secs = WorkTimer.stop();
+                const earned = Math.max(10, Math.floor(secs / 60));
+                Coins.add(earned);
+                document.getElementById('coin-count').textContent = Coins.current();
+                showToast(`下班！获得 ${earned} 金币`, 'coins');
+                createCoinRain(10);
+                WorkStats.addBreak();
+            } else {
+                if (Energy.current() < 10) {
+                    showToast('精力不足，去商城补充一下吧', 'warning');
+                    return;
+                }
+                Energy.use(10);
+                updateEnergyUI();
+                WorkTimer.start(8);
+                showToast('开工了！加油打工人 💪', 'success');
+            }
+            updateWorkUI();
+        });
+
+        /* ========== 在线人数 ========== */
         function updateOnlineCount() {
-            const base = 3800;
-            const variation = Math.floor(Math.random() * 200);
-            onlineCount.textContent = `${base + variation} 人在线`;
-            
+            const n = 3800 + Math.floor(Math.random() * 200);
+            const text = `${n.toLocaleString()} 人在线`;
+            document.getElementById('online-count-header').textContent = text;
+            document.getElementById('online-count-body').textContent = text;
             setTimeout(updateOnlineCount, 5000 + Math.random() * 5000);
         }
-        
-        // 初始化
         updateOnlineCount();
+
+        /* ========== 通知 ========== */
+        function renderNotifications() {
+            const list = [];
+            const e = Energy.current();
+            if (e <= 30) {
+                list.push({ icon: 'fa-battery-quarter', color: 'red', title: '精力不足警告', desc: `精力值仅剩 ${e}，建议去商城补充`, time: '刚刚' });
+            }
+            if (WorkTimer.isActive()) {
+                const elapsed = Math.floor(WorkTimer.elapsed() / 60000);
+                if (elapsed > 120) {
+                    list.push({ icon: 'fa-mug-hot', color: 'amber', title: '休息提醒', desc: '你已连续工作超过2小时，建议休息一下', time: '持续中' });
+                }
+            }
+            const nextMins = Level.nextMins();
+            if (nextMins > 0 && nextMins <= 60) {
+                list.push({ icon: 'fa-arrow-up', color: 'purple', title: '即将升级', desc: `再工作 ${nextMins} 分钟即可升级！`, time: '提示' });
+            }
+            if (list.length === 0) {
+                list.push({ icon: 'fa-bell', color: 'blue', title: '一切正常', desc: '暂时没有新通知，继续保持！', time: '现在' });
+            }
+            document.getElementById('notifications').innerHTML = list.map(n => `
+                <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm fade-in-up">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-${n.color}-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                            <i class="fas ${n.icon} text-${n.color}-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">${n.title}</h3>
+                            <p class="text-sm text-gray-500 mt-1">${n.desc}</p>
+                            <p class="text-xs text-gray-400 mt-2">${n.time}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        renderNotifications();
+        setInterval(renderNotifications, 30000);
     </script>
 </body>
-</html> 
+</html>

@@ -2,128 +2,91 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>工作 - 打工人日记</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/common.css">
     <style>
-        .status-bar {
-            height: 44px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px;
-            font-size: 17px;
-            font-weight: 600;
-        }
-        .status-icons {
-            display: flex;
-            gap: 8px;
-        }
-        .status-icon {
-            width: 18px;
-            height: 18px;
-            background-color: #000;
-            opacity: 0.8;
-            border-radius: 2px;
-        }
-        .tab-bar {
-            height: 80px;
-            background: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid #f0f0f0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #888;
-            font-size: 11px;
-        }
-        .tab-item.active {
-            color: #007AFF;
-        }
-        .tab-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
         .timer-circle {
-            width: 220px;
-            height: 220px;
+            width: 220px; height: 220px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            background: conic-gradient(var(--ring-color, #3b82f6) var(--ring-pct, 0%), #e5e7eb var(--ring-pct, 0%));
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.05);
+            align-items: center; justify-content: center;
             position: relative;
+            transition: --ring-pct 1s linear;
         }
-        .timer-circle::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
+        .timer-inner {
+            width: 190px; height: 190px;
             border-radius: 50%;
             background: white;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
         }
-        .timer-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .time-select-popup {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 1000;
         }
-        .mario-icon {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            top: 20px;
-            right: 20px;
-            transform: rotate(15deg);
+        .time-select-popup.active { display: flex; }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%; height: 4px;
+            border-radius: 2px;
+            background: #e2e8f0;
+            outline: none; margin: 20px 0;
         }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+        .bar-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 80px; padding: 0 8px; }
+        .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .bar-fill { width: 24px; border-radius: 4px 4px 0 0; transition: height 0.6s ease; min-height: 2px; }
     </style>
 </head>
 <body class="bg-white text-gray-900">
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div class="time">9:41</div>
-        <div class="status-icons">
-            <i class="fa-solid fa-battery-three-quarters "></i>
-        </div>
-    </div>
+    <div class="status-bar" id="status-bar"></div>
 
-    <!-- 主要内容 -->
-    <div class="px-5 pt-4 pb-20">
-        <h1 class="text-2xl font-bold mb-8">工作计时</h1>
+    <div class="px-5 pt-4 pb-24">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">工作计时</h1>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center bg-amber-50 py-1 px-3 rounded-full">
+                    <i class="fas fa-coins text-amber-500 mr-1"></i>
+                    <span class="font-medium text-sm" id="coin-display">0</span>
+                </div>
+                <div class="flex items-center bg-blue-50 py-1 px-3 rounded-full">
+                    <i class="fas fa-bolt text-blue-500 mr-1"></i>
+                    <span class="font-medium text-sm" id="energy-display">80</span>
+                </div>
+            </div>
+        </div>
 
         <!-- 计时器 -->
         <div class="flex flex-col items-center mb-8">
-            <div class="timer-circle">
-                <div class="timer-content">
-                    <p class="text-4xl font-bold mb-1" id="countdown-timer">08:00:00</p>
-                    <p class="text-gray-500 text-sm">今日剩余工作时间</p>
+            <div class="timer-circle" id="timer-ring">
+                <div class="timer-inner">
+                    <p class="text-4xl font-bold mb-1" id="timer-display">08:00:00</p>
+                    <p class="text-gray-500 text-sm" id="timer-label">点击开始计时</p>
                 </div>
             </div>
-         
         </div>
 
         <!-- 控制按钮 -->
         <div class="flex justify-center space-x-4 mb-10">
-            <button class="bg-blue-500 text-white py-3 px-8 rounded-full font-medium">
-                开始工作
+            <button class="bg-blue-500 text-white py-3 px-8 rounded-full font-medium transition-all" id="start-btn">
+                开始计时
             </button>
-            <button class="bg-gray-200 text-gray-800 py-3 px-8 rounded-full font-medium">
-                休息一下
+            <button class="bg-pink-300 text-white py-3 px-8 rounded-full font-medium transition-all" id="end-btn">
+                下班啦
             </button>
         </div>
 
@@ -133,15 +96,15 @@
             <div class="grid grid-cols-3 gap-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs mb-1">专注次数</p>
-                    <p class="text-xl font-bold">8</p>
+                    <p class="text-xl font-bold" id="stat-sessions">0</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-gray-500 text-xs mb-1">休息次数</p>
-                    <p class="text-xl font-bold">4</p>
+                    <p class="text-gray-500 text-xs mb-1">总工作时长</p>
+                    <p class="text-xl font-bold" id="stat-total">0m</p>
                 </div>
                 <div class="text-center">
                     <p class="text-gray-500 text-xs mb-1">最长专注</p>
-                    <p class="text-xl font-bold">1h 45m</p>
+                    <p class="text-xl font-bold" id="stat-longest">0m</p>
                 </div>
             </div>
         </div>
@@ -149,78 +112,181 @@
         <!-- 本周趋势 -->
         <h2 class="text-lg font-semibold mb-3">本周趋势</h2>
         <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-            <div class="h-20 flex items-end justify-between px-2">
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-100 rounded-t-md" style="height: 30%"></div>
-                    <p class="text-xs text-gray-500 mt-1">一</p>
-                </div>
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-300 rounded-t-md" style="height: 60%"></div>
-                    <p class="text-xs text-gray-500 mt-1">二</p>
-                </div>
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-400 rounded-t-md" style="height: 80%"></div>
-                    <p class="text-xs text-gray-500 mt-1">三</p>
-                </div>
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-500 rounded-t-md" style="height: 75%"></div>
-                    <p class="text-xs text-gray-500 mt-1">四</p>
-                </div>
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-400 rounded-t-md" style="height: 65%"></div>
-                    <p class="text-xs text-gray-500 mt-1">五</p>
-                </div>
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-200 rounded-t-md" style="height: 40%"></div>
-                    <p class="text-xs text-gray-500 mt-1">六</p>
-                </div>
-                <div class="h-full flex flex-col items-center justify-end">
-                    <div class="w-8 bg-blue-100 rounded-t-md" style="height: 20%"></div>
-                    <p class="text-xs text-gray-500 mt-1">日</p>
+            <div class="bar-chart" id="week-chart"></div>
+        </div>
+
+        <!-- 时间选择弹窗 -->
+        <div class="time-select-popup" id="time-popup">
+            <div class="bg-white rounded-2xl p-6 w-[90%] max-w-[320px]">
+                <h3 class="text-lg font-bold text-center mb-5">选择工作时长</h3>
+                <div class="text-center text-2xl font-bold text-blue-500 mb-2" id="slider-val">8小时</div>
+                <input type="range" min="1" max="10" value="8" class="slider" id="time-slider">
+                <p class="text-center text-sm text-gray-400 mb-4">消耗精力: <span id="energy-cost">10</span></p>
+                <div class="flex gap-3 mt-3">
+                    <button class="flex-1 py-3 rounded-lg bg-gray-100 text-gray-600 font-medium" id="popup-cancel">取消</button>
+                    <button class="flex-1 py-3 rounded-lg bg-blue-500 text-white font-medium" id="popup-confirm">开始计时</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 底部导航栏 -->
-    <div class="tab-bar">
-        <div class="tab-item">
-            <i class="fas fa-home tab-icon"></i>
-            <span>首页</span>
-        </div>
-        <div class="tab-item active">
-            <i class="fas fa-briefcase tab-icon"></i>
-            <span>工作</span>
-        </div>
-        <div class="tab-item">
-            <i class="fas fa-user tab-icon"></i>
-            <span>我的</span>
-        </div>
-    </div>
+    <div class="tab-bar" id="tab-bar"></div>
 
+    <script src="../js/app.js"></script>
     <script>
-    // 倒计时功能
-    function updateCountdown() {
-        const now = new Date();
-        const target = new Date();
-        target.setHours(18, 0, 0, 0); // 设置目标时间为18:00
-        
-        if (now > target) {
-            target.setDate(target.getDate() + 1); // 如果当前时间超过目标时间，设置为明天
-        }
-        
-        const diff = target - now;
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
-        document.getElementById('countdown-timer').textContent = 
-            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
+        renderTabBar('work');
 
-    // 每秒更新倒计时
-    setInterval(updateCountdown, 1000);
-    updateCountdown(); // 立即执行一次
+        const timerDisplay = document.getElementById('timer-display');
+        const timerLabel = document.getElementById('timer-label');
+        const timerRing = document.getElementById('timer-ring');
+        const startBtn = document.getElementById('start-btn');
+        const endBtn = document.getElementById('end-btn');
+        const slider = document.getElementById('time-slider');
+        let selectedHours = 8;
+
+        document.getElementById('coin-display').textContent = Coins.current();
+        document.getElementById('energy-display').textContent = Energy.current();
+
+        /* ========== 统计数据渲染 ========== */
+        function renderStats() {
+            const d = WorkStats.todayData();
+            let totalSec = d.totalSec;
+            let longestSec = d.longestSec;
+            if (WorkTimer.isActive()) {
+                const elapsed = Math.floor(WorkTimer.elapsed() / 1000);
+                totalSec += elapsed;
+                longestSec = Math.max(longestSec, elapsed);
+            }
+            document.getElementById('stat-sessions').textContent = d.sessions + (WorkTimer.isActive() ? 1 : 0);
+            document.getElementById('stat-total').textContent = formatDuration(totalSec);
+            document.getElementById('stat-longest').textContent = formatDuration(longestSec);
+        }
+
+        /* ========== 本周趋势图 ========== */
+        function renderWeekChart() {
+            const data = WorkStats.weekData();
+            const labels = ['一', '二', '三', '四', '五', '六', '日'];
+            const max = Math.max(...data, 60);
+            const colors = ['#93c5fd', '#60a5fa', '#3b82f6', '#2563eb', '#3b82f6', '#93c5fd', '#bfdbfe'];
+            document.getElementById('week-chart').innerHTML = data.map((mins, i) => {
+                const pct = Math.max(3, Math.round(mins / max * 100));
+                return `<div class="bar-col">
+                    <div class="bar-fill" style="height:${pct}%; background:${colors[i]}"></div>
+                    <p class="text-xs text-gray-500 mt-1">${labels[i]}</p>
+                    ${mins > 0 ? `<p class="text-xs text-gray-400">${mins}m</p>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        /* ========== 计时器UI更新 ========== */
+        let tickInterval = null;
+
+        function updateTimerUI() {
+            const active = WorkTimer.isActive();
+            if (active) {
+                const rem = WorkTimer.remaining();
+                const state = WorkTimer.getState();
+                const total = state.totalHours * 3600000;
+                const pct = Math.round((1 - rem / total) * 100);
+                const h = Math.floor(rem / 3600000);
+                const m = Math.floor((rem % 3600000) / 60000);
+                const s = Math.floor((rem % 60000) / 1000);
+
+                timerDisplay.textContent = `${padTime(h)}:${padTime(m)}:${padTime(s)}`;
+                timerLabel.textContent = '剩余工作时间';
+                timerRing.style.setProperty('--ring-pct', pct + '%');
+                timerRing.style.setProperty('--ring-color', '#3b82f6');
+
+                startBtn.textContent = '计时中';
+                startBtn.classList.replace('bg-blue-500', 'bg-purple-500');
+
+                if (rem <= 0) {
+                    finishWork();
+                }
+            } else {
+                timerDisplay.textContent = '08:00:00';
+                timerLabel.textContent = '点击开始计时';
+                timerRing.style.setProperty('--ring-pct', '0%');
+                startBtn.textContent = '开始计时';
+                startBtn.classList.replace('bg-purple-500', 'bg-blue-500');
+            }
+            renderStats();
+        }
+
+        function finishWork() {
+            const secs = WorkTimer.stop();
+            const earned = Math.max(10, Math.floor(secs / 60) * 2);
+            Coins.add(earned);
+            document.getElementById('coin-display').textContent = Coins.current();
+            showToast(`工作完成！获得 ${earned} 金币 🎉`, 'coins', 3000);
+            createFireworks();
+            createCoinRain(15);
+            renderWeekChart();
+            updateTimerUI();
+        }
+
+        function startTick() {
+            if (tickInterval) clearInterval(tickInterval);
+            tickInterval = setInterval(updateTimerUI, 1000);
+        }
+
+        /* ========== 事件绑定 ========== */
+        slider.addEventListener('input', function () {
+            selectedHours = parseInt(this.value);
+            document.getElementById('slider-val').textContent = `${selectedHours}小时`;
+            document.getElementById('energy-cost').textContent = Math.ceil(selectedHours * 1.25);
+        });
+
+        startBtn.addEventListener('click', function () {
+            if (WorkTimer.isActive()) {
+                const secs = WorkTimer.stop();
+                const earned = Math.max(5, Math.floor(secs / 60));
+                Coins.add(earned);
+                document.getElementById('coin-display').textContent = Coins.current();
+                showToast(`提前下班，获得 ${earned} 金币`, 'coins');
+                WorkStats.addBreak();
+                updateTimerUI();
+                renderWeekChart();
+            } else {
+                document.getElementById('time-popup').classList.add('active');
+            }
+        });
+
+        document.getElementById('popup-cancel').addEventListener('click', () => {
+            document.getElementById('time-popup').classList.remove('active');
+        });
+
+        document.getElementById('popup-confirm').addEventListener('click', () => {
+            const cost = Math.ceil(selectedHours * 1.25);
+            if (Energy.current() < cost) {
+                showToast(`精力不足（需要${cost}），去商城补充吧`, 'warning');
+                return;
+            }
+            Energy.use(cost);
+            document.getElementById('energy-display').textContent = Energy.current();
+            document.getElementById('time-popup').classList.remove('active');
+            WorkTimer.start(selectedHours);
+            showToast(`开始 ${selectedHours} 小时工作计时！`, 'success');
+            updateTimerUI();
+            startTick();
+        });
+
+        endBtn.addEventListener('click', function () {
+            if (!WorkTimer.isActive()) {
+                showToast('还没开始工作呢 😅', 'info');
+                return;
+            }
+            createStars(this, 10);
+            finishWork();
+            this.classList.replace('bg-pink-300', 'bg-green-500');
+            setTimeout(() => this.classList.replace('bg-green-500', 'bg-pink-300'), 3000);
+        });
+
+        /* ========== 初始化 ========== */
+        updateTimerUI();
+        renderStats();
+        renderWeekChart();
+        if (WorkTimer.isActive()) startTick();
     </script>
 </body>
-</html> 
+</html>
